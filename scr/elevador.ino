@@ -39,7 +39,9 @@ const int downMotor = 11;       // Motor en marcha para bajada
 
 // Las variables cambiarán.
 int elevatorState;            // Variable que indica la posición del ascensor
-int speedMotor;               // Fija la velocidad del motor que se configurá con EnableMotor
+int speedMotor;               // variable que indica la velocidad del motor que se configurá con EnableMotor
+bool goingUp;                 // Variable que indica que el ascensor tiene que subir
+bool goingDown;               // Variable que indica que el ascensor tiene que bajar
 
 void setup() {
   // Declaro los botones como entradas:
@@ -62,15 +64,30 @@ void loop() {
   level1ButtonState = digitalRead(level1Button);
   upButtonState = digitalRead(upButton);
   downButtonState = digitalRead(downButton);
+
   // Compruebo donde se encuentra el ascensor:
   if (level0State == 1) elevatorState = 0;        // El ascensor se encuentra en la planta 0
   else if (level1State == 1) elevatorState = 1;   // El ascensor se encuentra en la planta 1
   else elevatorState = 2;                         // El ascensor se encuentra en una posición intermedia
-  // Si se pulsa algún botón para bajar y el ascensor no está en la planta 0 se mueve
-  if ((level0ButtonState == 1 || downButtonState == 1) && elevatorState != 0) elevatorGoDown();
-  // Si se pulsa algún botón para subir y el ascensor no está en la planta 1 se mueve
-  else if (level1ButtonState == 1 || upButtonState == 1) && elevatorState != 1) elevatorGoUp();
-  // Si no se pulsa ningún botón o el ascensor está en la posición requerida se detiene
+
+  // En este bloque se comprueba si el ascensor tiene que bajar o subir en función del estado y los botones
+  // Se pulsa el botón de llamada desde la planta 0 o se pulsa el botón de bajar desde el ascensor
+  // y el ascensor está en la planta 1
+  if ((level1ButtonState == 1 || downButtonState == 1) && elevatorState == 1) goingDown = 1;
+  // Se llega a la planta 0
+  if (elevatorState == 0) goingDown = 0;
+  // Se pulsa el botón de llamada desde la planta 1 o se pulsa el botón de subir desde el ascensor
+  // y el ascensor está en la planta 0
+  if ((level0ButtonState == 1 || upButtonState == 1) && elevatorState == 0) goingUp = 1;
+  // Se llega a la planta 1
+  if (elevatorState == 1) goingUp = 0;
+
+  // En este bloque se controla el motor en función si se requiere que baje o suba
+  // Se llama a la función de bajada en caso de que haya que bajar
+  if (goingDown = 1) elevatorGoDown();
+  // Se llama a la función de subida en casa de que haya que subir
+  if (goingUp = 1) elevatorGoUp();
+  // Si no tiene que subir ni bajar, se detiene
   else elevatorStop();
 }
 
