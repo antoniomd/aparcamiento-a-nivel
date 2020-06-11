@@ -33,11 +33,15 @@ const int upButton = 5;         // Entrada del botón de subir del ascensor
 const int downButton = 6;       // Entrada del botón de bajar del ascensor
 const int level0State = 7;      // Final de carrera que indica que está en la planta 0
 const int level1State = 8;      // Final de carrera que indica que está en la planta 1
-const int EnableMotor = 9;      // Salida para habilitación del motor
+const int enableMotor = 9;      // Salida para habilitación del motor
 const int upMotor = 10;         // Motor en marcha para subida
 const int downMotor = 11;       // Motor en marcha para bajada
 
 // Las variables cambiarán.
+bool level0ButtonState;       // Variable que almacena la pulsación del botón situado en la planta 0
+bool level1ButtonState;       // Variable que almacena la pulsación del botón situado en la planta 1
+bool downButtonState;         // Variable que almacena la pulsación del botón bajar del ascensor
+bool upButtonState;           // Variable que almacena la pulsación del botón subir del ascensor
 int elevatorState;            // Variable que indica la posición del ascensor
 int speedMotor;               // variable que indica la velocidad del motor que se configurá con EnableMotor
 bool goingUp;                 // Variable que indica que el ascensor tiene que subir
@@ -53,7 +57,7 @@ void setup() {
   pinMode(level0State, INPUT);
   pinMode(level1State, INPUT);
   // Declaro las salidas de motor como salidas:
-  pinMode(EnableMotor, OUTPUT);
+  pinMode(enableMotor, OUTPUT);
   pinMode(upMotor, OUTPUT);
   pinMode(downMotor, OUTPUT);
 }
@@ -72,13 +76,13 @@ void loop() {
 
   // En este bloque se comprueba si el ascensor tiene que bajar o subir en función del estado y los botones
   // Se pulsa el botón de llamada desde la planta 0 o se pulsa el botón de bajar desde el ascensor
-  // y el ascensor está en la planta 1
-  if ((level1ButtonState == 1 || downButtonState == 1) && elevatorState == 1) goingDown = 1;
+  // y el ascensor no está subiendo
+  if ((level1ButtonState == 1 || downButtonState == 1) && goingUp == 1) goingDown = 1;
   // Se llega a la planta 0
   if (elevatorState == 0) goingDown = 0;
   // Se pulsa el botón de llamada desde la planta 1 o se pulsa el botón de subir desde el ascensor
-  // y el ascensor está en la planta 0
-  if ((level0ButtonState == 1 || upButtonState == 1) && elevatorState == 0) goingUp = 1;
+  // y el ascensor no está bajando
+  if ((level0ButtonState == 1 || upButtonState == 1) && goingDown == 0) goingUp = 1;
   // Se llega a la planta 1
   if (elevatorState == 1) goingUp = 0;
 
@@ -92,19 +96,19 @@ void loop() {
 }
 
 void elevatorGoDown() {
-  analogWrite(ENABLE,speedMotor);   // Paro del upMotor
+  analogWrite(enableMotor,speedMotor);   // Paro del upMotor
   digitalWrite(downMotor,LOW);      // Paro de la dirección subir
   digitalWrite(upMotor,HIGH);       // Paro de la dirección bajar
 }
 
-void elevatorGoDown() [
-  analogWrite(ENABLE,speedMotor);   // Paro del upMotor
+void elevatorGoUp() {
+  analogWrite(enableMotor,speedMotor);   // Paro del upMotor
   digitalWrite(downMotor,HIGH);     // Paro de la dirección subir
   digitalWrite(upMotor,LOW);        // Paro de la dirección bajar
-]
+}
 
 void elevatorStop() {
-  analogWrite(ENABLE,LOW);          // Paro del upMotor
+  analogWrite(enableMotor,0);          // Paro del upMotor
   digitalWrite(downMotor,LOW);      // Paro de la dirección subir
   digitalWrite(upMotor,LOW);        // Paro de la dirección bajar
 }
