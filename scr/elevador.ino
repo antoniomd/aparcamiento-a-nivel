@@ -63,14 +63,14 @@ void loop() {
   upButtonState = digitalRead(upButton);
   downButtonState = digitalRead(downButton);
   // Compruebo donde se encuentra el ascensor:
-  if (level0State == 1) elevatorState = 0;    // El ascensor se encuentra en la planta 0
-  if (level1State == 1) elevatorState = 1;    // El ascensor se encuentra en la planta 1
-  else elevatorState = 2;                     // El ascensor se encuentra en una posición intermedia
-
-  if ((level0ButtonState == 1 or downButtonState == 1) and elevatorState != 0) elevatorGoDown();
-
-  if (level1ButtonState == 1 or upButtonState == 1) and elevatorState != 1) elevatorGoUp();
-
+  if (level0State == 1) elevatorState = 0;        // El ascensor se encuentra en la planta 0
+  else if (level1State == 1) elevatorState = 1;   // El ascensor se encuentra en la planta 1
+  else elevatorState = 2;                         // El ascensor se encuentra en una posición intermedia
+  // Si se pulsa algún botón para bajar y el ascensor no está en la planta 0 se mueve
+  if ((level0ButtonState == 1 || downButtonState == 1) && elevatorState != 0) elevatorGoDown();
+  // Si se pulsa algún botón para subir y el ascensor no está en la planta 1 se mueve
+  else if (level1ButtonState == 1 || upButtonState == 1) && elevatorState != 1) elevatorGoUp();
+  // Si no se pulsa ningún botón o el ascensor está en la posición requerida se detiene
   else elevatorStop();
 }
 
